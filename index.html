@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FriendChat</title>
+  <meta name="theme-color" content="#087df1">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--blue:#087df1;--blue2:#e8f3ff;--ink:#182230;--muted:#718096;--line:#e7edf3;--panel:#fff;--bg:#f4f7fb;--green:#1bba72;--danger:#d64545}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+    button,input{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:650;transition:.15s}button:disabled{opacity:.45;cursor:not-allowed}
+    .primary{background:var(--blue);color:white}.primary:hover{background:#006be0}.secondary{background:#edf3f8;color:#233244}.danger{background:#fff0f0;color:var(--danger)}
+    input{width:100%;border:1px solid #dce5ee;border-radius:12px;padding:12px 13px;outline:none;background:white;color:var(--ink)}input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #087df11c}
+    .hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:12px}.tiny{font-size:11px}.row{display:flex;align-items:center;gap:10px}.spread{justify-content:space-between}.stack{display:flex;flex-direction:column;gap:10px}
+    .avatar{width:42px;height:42px;border-radius:50%;background:#dcecff;color:#0865c4;display:grid;place-items:center;font-weight:800;flex-shrink:0}.avatar.big{width:56px;height:56px;font-size:20px}
+    .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:22px}.auth-card{width:min(420px,100%);background:white;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 40px #18324d0c}
+    .brand{display:flex;align-items:center;gap:10px;font-size:25px;font-weight:850;letter-spacing:-.8px}.brand-mark{width:38px;height:38px;border-radius:13px;background:var(--blue);color:white;display:grid;place-items:center;font-size:21px}
+    .auth-card h1{font-size:24px;margin:24px 0 6px}.auth-card p{margin:0 0 20px;line-height:1.45}.auth-card form{display:flex;flex-direction:column;gap:12px}.auth-switch{margin-top:18px;text-align:center;font-size:14px}.link{background:transparent;color:var(--blue);padding:4px}
+    .app{height:100vh;min-height:560px;display:grid;grid-template-columns:300px minmax(0,1fr);max-width:1440px;margin:auto;background:white;box-shadow:0 0 50px #24364b0b}
+    .sidebar{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}.side-head{padding:22px 18px 14px}.side-head .brand{font-size:22px}.side-head .brand-mark{width:33px;height:33px;font-size:18px;border-radius:11px}
+    .me{padding:12px 18px 16px;display:flex;align-items:center;gap:10px}.me-info{min-width:0;flex:1}.me-info strong,.me-info span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.me-info span{font-size:12px;color:var(--muted);margin-top:3px}
+    .side-actions{padding:0 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.side-actions button{font-size:13px;padding:10px 8px}
+    .section-label{padding:13px 18px 7px;color:#8793a2;font-size:11px;font-weight:800;letter-spacing:.9px;text-transform:uppercase}
+    .contact-list{overflow:auto;padding:0 8px 12px}.contact{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;cursor:pointer}.contact:hover{background:#f5f8fc}.contact.active{background:var(--blue2)}.contact .info{flex:1;min-width:0}.contact strong{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:14px}.contact .preview{font-size:12px;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;margin-top:4px}
+    .chat{min-width:0;display:flex;flex-direction:column;background:white}.chat-head{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:14px 22px}.chat-head .person{flex:1;min-width:0}.chat-head strong{display:block}.chat-head .status{font-size:12px;color:var(--green);margin-top:4px}
+    .messages{flex:1;overflow-y:auto;padding:24px clamp(16px,4vw,54px);display:flex;flex-direction:column;gap:9px;background:linear-gradient(#fff,#fcfdff)}.empty{margin:auto;text-align:center;max-width:330px;padding:24px}.empty .bubble{width:74px;height:74px;border-radius:25px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:35px;margin:0 auto 18px}.empty h2{margin:0 0 8px;font-size:21px}.empty p{color:var(--muted);line-height:1.5;font-size:14px}
+    .msg-row{display:flex;flex-direction:column;max-width:min(72%,520px);align-self:flex-start}.msg-row.mine{align-self:flex-end;align-items:flex-end}.bubble-msg{padding:11px 14px;border-radius:18px 18px 18px 5px;background:#eef2f6;line-height:1.4;overflow-wrap:anywhere;white-space:pre-wrap}.mine .bubble-msg{background:var(--blue);color:white;border-radius:18px 18px 5px 18px}.msg-time{font-size:10px;color:#9aa5b2;margin:4px 5px 0}
+    .composer{padding:16px 22px 20px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}.composer input{border-radius:24px;background:#f4f7fa;border-color:transparent;padding:14px 17px}.composer input:focus{background:white;border-color:var(--blue)}.send{width:48px;height:48px;border-radius:50%;padding:0;font-size:19px;flex-shrink:0}
+    .notice{margin:0 14px 12px;padding:10px 12px;background:#fff8e5;color:#80601a;border-radius:12px;font-size:12px;line-height:1.4}.error{color:var(--danger);font-size:13px;line-height:1.4}.success{color:#15824f;font-size:13px;line-height:1.4}
+    .modal-backdrop{position:fixed;inset:0;background:#15233866;display:grid;place-items:center;padding:18px;z-index:5}.modal{width:min(430px,100%);background:white;border-radius:22px;padding:23px;box-shadow:0 20px 70px #10203030}.modal h2{margin:0 0 7px}.modal p{color:var(--muted);font-size:14px;line-height:1.45}.modal form{display:flex;gap:8px}.modal form input{min-width:0}.modal .close{float:right;background:#f0f3f7;border-radius:50%;padding:7px 10px}
+    .request{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--line)}.request:last-child{border-bottom:0}.request .req-info{flex:1;min-width:0}.request strong{display:block;font-size:14px}.request .actions{display:flex;gap:5px}.request .actions button{padding:8px;font-size:12px}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#182230;color:white;border-radius:12px;padding:12px 16px;box-shadow:0 8px 25px #0002;z-index:20;font-size:13px;max-width:90vw}
+    @media(max-width:700px){.app{height:100dvh;min-height:0;grid-template-columns:1fr}.sidebar{display:flex}.chat{display:none}.app.chat-open{grid-template-columns:1fr}.app.chat-open .sidebar{display:none}.app.chat-open .chat{display:flex}.side-head{padding-top:16px}.chat-head{height:72px;padding:12px 15px}.messages{padding:18px 14px}.composer{padding:12px}.msg-row{max-width:86%}.back{display:inline-block!important}.side-actions{grid-template-columns:1fr 1fr}.notice{margin-bottom:8px}}
+    .back{display:none;background:#edf3f8;padding:8px 11px}
+  </style>
+</head>
+<body>
+  <div id="authView" class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand"><span class="brand-mark">✦</span> FriendChat</div>
+      <h1 id="authTitle">Welcome back</h1>
+      <p class="muted" id="authSubtitle">Sign in to catch up with your friends.</p>
+      <form id="authForm">
+        <input id="usernameInput" class="hidden" placeholder="Username (shown to friends)" maxlength="24" autocomplete="nickname">
+        <input id="emailInput" type="email" placeholder="Email address" required autocomplete="email">
+        <input id="passwordInput" type="password" placeholder="Password (at least 6 characters)" required minlength="6" autocomplete="current-password">
+        <button id="authSubmit" class="primary" type="submit">Sign in</button>
+      </form>
+      <div id="authMessage" class="error" style="margin-top:12px"></div>
+      <div class="auth-switch"><span id="switchText">New to FriendChat?</span> <button id="switchAuth" class="link" type="button">Create account</button></div>
+      <p class="small muted" style="margin:20px 0 0">FriendChat is a starter project. Create an account only after the Supabase setup steps are complete.</p>
+    </div>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="side-head"><div class="brand"><span class="brand-mark">✦</span> FriendChat</div></div>
+      <div class="me">
+        <div id="myAvatar" class="avatar">Y</div>
+        <div class="me-info"><strong id="myName">Your account</strong><span id="myEmail">Signed in</span></div>
+        <button id="signOutBtn" class="secondary" title="Sign out" style="padding:8px 10px">↪</button>
+      </div>
+      <div class="side-actions">
+        <button id="addFriendBtn" class="primary">＋ Add friend</button>
+        <button id="requestsBtn" class="secondary">Requests <span id="requestCount"></span></button>
+      </div>
+      <div id="setupNotice" class="notice hidden">Finish the Supabase setup instructions in README.md to enable chat.</div>
+      <div class="section-label">Your friends</div>
+      <div id="contactList" class="contact-list"></div>
+    </aside>
+    <main class="chat">
+      <header class="chat-head">
+        <button id="backBtn" class="back">←</button>
+        <div id="chatAvatar" class="avatar">✦</div>
+        <div class="person"><strong id="chatName">Welcome to FriendChat</strong><div id="chatStatus" class="status muted">Choose a friend to start chatting</div></div>
+      </header>
+      <section id="messages" class="messages">
+        <div class="empty"><div class="bubble">✦</div><h2>Your people, one place.</h2><p>Add a friend to start a private conversation. Messages will appear here in real time.</p></div>
+      </section>
+      <form id="composer" class="composer">
+        <input id="messageInput" placeholder="Write a message..." maxlength="4000" autocomplete="off" disabled>
+        <button id="sendBtn" class="primary send" type="submit" disabled aria-label="Send message">➤</button>
+      </form>
+    </main>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <button id="closeModal" class="close" type="button">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+
+<script>
+(() => {
+  // Add your Supabase project URL and anon/publishable key here after setup.
+  const SUPABASE_URL = "https://wtgiselmdyiiehblzqtz.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_DfpmlvxXk8_iVt0ec0sBCA_Cvwap3qQ";
+  const configured = SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("PASTE_") && !SUPABASE_ANON_KEY.includes("PASTE_");
+  const db = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  const $ = id => document.getElementById(id);
+  let isSignup = false, currentUser = null, myProfile = null, friends = [], selectedFriend = null;
+  let messagesChannel = null, inboxChannel = null, friendsChannel = null, refreshTimer = null;
+  const initials = name => (name || "?").trim().split(/\s+/).slice(0,2).map(s => s[0] || "").join("").toUpperCase();
+  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const say = (message, kind="error") => { $("authMessage").className = kind; $("authMessage").textContent = message; };
+  let toastTimer;
+  function toast(message){ $("toast").textContent=message; $("toast").classList.remove("hidden"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),2800); }
+  function showModal(content){ $("modalContent").innerHTML=content; $("modalBackdrop").classList.remove("hidden"); }
+  function closeModal(){ $("modalBackdrop").classList.add("hidden"); $("modalContent").innerHTML=""; }
+  $("closeModal").onclick=closeModal;
+  $("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))closeModal();});
+
+  function setAuthMode(signup){
+    isSignup=signup; $("authTitle").textContent=signup?"Create your account":"Welcome back";
+    $("authSubtitle").textContent=signup?"Choose a username and start building your friend list.":"Sign in to catch up with your friends.";
+    $("usernameInput").classList.toggle("hidden",!signup); $("usernameInput").required=signup;
+    $("authSubmit").textContent=signup?"Create account":"Sign in";
+    $("switchText").textContent=signup?"Already have an account?":"New to FriendChat?";
+    $("switchAuth").textContent=signup?"Sign in":"Create account"; say("");
+  }
+  $("switchAuth").onclick=()=>setAuthMode(!isSignup);
+  $("authForm").addEventListener("submit",async e=>{
+    e.preventDefault(); say("");
+    if(!db){say("First connect FriendChat to Supabase. Follow the setup guide in README.md, then add your project URL and public anon/publishable key to index.html.");return;}
+    const email=$("emailInput").value.trim(), password=$("passwordInput").value, username=$("usernameInput").value.trim();
+    $("authSubmit").disabled=true; $("authSubmit").textContent="Please wait…";
+    try{
+      if(isSignup){
+        if(username.length<3 || !/^[a-zA-Z0-9_]+$/.test(username)) throw new Error("Username must be 3–24 characters and use only letters, numbers, or underscores.");
+        const {data,error}=await db.auth.signUp({email,password,options:{data:{username}}});
+        if(error) throw error;
+        if(!data.session) say("Account created. Check your email for the confirmation link, then sign in.", "success");
+        else toast("Account created!");
+      } else {
+        const {error}=await db.auth.signInWithPassword({email,password}); if(error) throw error;
+      }
+    }catch(err){say(err.message || "Something went wrong.");}
+    finally{$("authSubmit").disabled=false;$("authSubmit").textContent=isSignup?"Create account":"Sign in";}
+  });
+  $("signOutBtn").onclick=async()=>{if(db) await db.auth.signOut();};
+  $("backBtn").onclick=()=>{$("appView").classList.remove("chat-open");};
+  $("addFriendBtn").onclick=()=>showModal(`<h2>Add a friend</h2><p>Enter their exact username. They need a FriendChat account first.</p><form id="addFriendForm"><input id="friendUsername" placeholder="friend_username" maxlength="24" required><button class="primary">Send</button></form><div id="modalMessage" class="error" style="margin-top:12px"></div>`);
+  $("requestsBtn").onclick=showRequests;
+  $("composer").addEventListener("submit",sendMessage);
+
+  async function startApp(user){
+    currentUser=user; $("authView").classList.add("hidden"); $("appView").classList.remove("hidden");
+    if(!db){$("setupNotice").classList.remove("hidden");return;}
+    try{
+      const {data,error}=await db.from("profiles").select("id,username").eq("id",user.id).single();
+      if(error) throw error; myProfile=data;
+      $("myName").textContent=data.username; $("myEmail").textContent=user.email || "";
+      $("myAvatar").textContent=initials(data.username);
+      await loadFriends(); await updateRequestCount(); subscribeToUpdates();
+    }catch(err){toast("Setup issue: "+(err.message||"check README.md")); console.error(err);}
+  }
+  async function loadFriends(){
+    const {data:rows,error}=await db.from("friendships").select("user_a,user_b,status").eq("status","accepted").or(`user_a.eq.${currentUser.id},user_b.eq.${currentUser.id}`);
+    if(error) throw error;
+    const ids=(rows||[]).map(r=>r.user_a===currentUser.id?r.user_b:r.user_a);
+    if(!ids.length){friends=[];renderContacts();return;}
+    const {data:profiles,error:profileError}=await db.from("profiles").select("id,username").in("id",ids);
+    if(profileError) throw profileError;
+    friends=(profiles||[]).sort((a,b)=>a.username.localeCompare(b.username)); renderContacts();
+    if(selectedFriend && !friends.some(f=>f.id===selectedFriend.id)){selectedFriend=null;renderEmptyChat();}
+  }
+  function renderContacts(){
+    const host=$("contactList");
+    if(!friends.length){host.innerHTML='<div class="empty" style="padding:20px 12px"><p>No friends yet.<br>Use <b>Add friend</b> to find someone.</p></div>';return;}
+    host.innerHTML=friends.map(f=>`<div class="contact ${selectedFriend?.id===f.id?'active':''}" data-id="${escapeHtml(f.id)}"><div class="avatar">${escapeHtml(initials(f.username))}</div><div class="info"><strong>${escapeHtml(f.username)}</strong><div class="preview">${selectedFriend?.id===f.id?'Chat selected':'Tap to message'}</div></div></div>`).join("");
+    host.querySelectorAll(".contact").forEach(el=>el.onclick=()=>openChat(friends.find(f=>f.id===el.dataset.id)));
+  }
+  function renderEmptyChat(){
+    $("chatAvatar").textContent="✦";$("chatName").textContent="Welcome to FriendChat";$("chatStatus").textContent="Choose a friend to start chatting";$("chatStatus").className="status muted";
+    $("messages").innerHTML='<div class="empty"><div class="bubble">✦</div><h2>Your people, one place.</h2><p>Add a friend to start a private conversation. Messages will appear here in real time.</p></div>';
+    $("messageInput").disabled=true;$("sendBtn").disabled=true;renderContacts();
+  }
+  async function openChat(friend){
+    if(!friend)return; selectedFriend=friend; renderContacts(); $("appView").classList.add("chat-open");
+    $("chatAvatar").textContent=initials(friend.username);$("chatName").textContent=friend.username;$("chatStatus").textContent="FriendChat conversation";$("chatStatus").className="status muted";
+    $("messageInput").disabled=false;$("sendBtn").disabled=false;$("messageInput").focus();
+    await loadMessages();
+    if(messagesChannel) db.removeChannel(messagesChannel);
+    const pair=[currentUser.id,friend.id].sort();
+    messagesChannel=db.channel("messages-"+pair.join("-")).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages",filter:`conversation_key=eq.${pair.join("_")}`},payload=>{
+      if(selectedFriend?.id===friend.id) appendMessage(payload.new);
+    }).subscribe();
+  }
+  function conversationKey(a,b){return [a,b].sort().join("_");}
+  async function loadMessages(){
+    if(!selectedFriend)return;
+    const key=conversationKey(currentUser.id,selectedFriend.id);
+    const {data,error}=await db.from("messages").select("id,sender_id,receiver_id,body,created_at").eq("conversation_key",key).order("created_at",{ascending:true}).limit(300);
+    if(error){toast("Could not load messages: "+error.message);return;}
+    $("messages").innerHTML="";
+    if(!data?.length){$("messages").innerHTML='<div class="empty"><div class="bubble">✉</div><h2>Say hello!</h2><p>This is the beginning of your conversation.</p></div>';return;}
+    data.forEach(appendMessage);scrollMessages();
+  }
+  function appendMessage(m){
+    if(!$("messages"))return;
+    if($("messages").querySelector(".empty"))$("messages").innerHTML="";
+    if($("messages").querySelector(`[data-message-id="${CSS.escape(m.id)}"]`))return;
+    const mine=m.sender_id===currentUser.id, time=new Date(m.created_at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+    const row=document.createElement("div");row.className="msg-row"+(mine?" mine":"");row.dataset.messageId=m.id;
+    row.innerHTML=`<div class="bubble-msg">${escapeHtml(m.body)}</div><div class="msg-time">${mine?"You":escapeHtml(selectedFriend?.username||"Friend")} · ${time}</div>`;
+    $("messages").appendChild(row);scrollMessages();
+  }
+  function scrollMessages(){$("messages").scrollTop=$("messages").scrollHeight;}
+  async function sendMessage(e){
+    e.preventDefault(); const body=$("messageInput").value.trim(); if(!body||!selectedFriend||!db)return;
+    $("sendBtn").disabled=true;
+    try{
+      const key=conversationKey(currentUser.id,selectedFriend.id);
+      const {error}=await db.from("messages").insert({sender_id:currentUser.id,receiver_id:selectedFriend.id,conversation_key:key,body});
+      if(error)throw error; $("messageInput").value="";
+    }catch(err){toast("Message not sent: "+err.message);}
+    finally{$("sendBtn").disabled=false;$("messageInput").focus();}
+  }
+  async function updateRequestCount(){
+    const {count,error}=await db.from("friendships").select("id",{count:"exact",head:true}).eq("user_b",currentUser.id).eq("status","pending");
+    if(!error)$("requestCount").textContent=count?`(${count})`:"";
+  }
+  $("modalContent").addEventListener;
+  document.addEventListener("submit",async e=>{
+    if(e.target.id==="addFriendForm"){
+      e.preventDefault();const username=$("friendUsername").value.trim();const msg=$("modalMessage");msg.className="error";msg.textContent="";
+      try{
+        if(username.toLowerCase()===myProfile.username.toLowerCase())throw new Error("You can't add yourself.");
+        const {data:person,error}=await db.from("profiles").select("id,username").ilike("username",username).single();
+        if(error||!person)throw new Error("No account found with that username.");
+        const [a,b]=[currentUser.id,person.id].sort();
+        const {data:existing,error:existingError}=await db.from("friendships").select("id,status").eq("user_a",a).eq("user_b",b).maybeSingle();
+        if(existingError)throw existingError;
+        if(existing?.status==="accepted")throw new Error("You're already friends.");
+        if(existing?.status==="pending")throw new Error("A request already exists.");
+        const {error:insertError}=await db.from("friendships").insert({user_a:a,user_b:b,requested_by:currentUser.id,status:"pending"});
+        if(insertError)throw insertError;
+        msg.className="success";msg.textContent="Friend request sent!";await updateRequestCount();
+      }catch(err){msg.textContent=err.message||"Could not send request.";}
+    }
+  });
+  async function showRequests(){
+    if(!db)return;
+    showModal("<h2>Friend requests</h2><p>Accept requests to add people to your friends list.</p><div id='requestsList'>Loading…</div>");
+    const {data:rows,error}=await db.from("friendships").select("id,user_a,user_b,requested_by,status").eq("status","pending").or(`user_a.eq.${currentUser.id},user_b.eq.${currentUser.id}`);
+    if(error){$("requestsList").textContent=error.message;return;}
+    const incoming=(rows||[]).filter(r=>r.requested_by!==currentUser.id);
+    const outgoing=(rows||[]).filter(r=>r.requested_by===currentUser.id);
+    const ids=[...new Set(incoming.map(r=>r.requested_by).concat(outgoing.map(r=>r.requested_by===r.user_a?r.user_b:r.user_a)))];
+    let names={};if(ids.length){const {data}=await db.from("profiles").select("id,username").in("id",ids);(data||[]).forEach(p=>names[p.id]=p.username);}
+    if(!rows?.length){$("requestsList").innerHTML='<p class="muted">No pending requests.</p>';return;}
+    $("requestsList").innerHTML=[...incoming.map(r=>`<div class="request"><div class="avatar">${escapeHtml(initials(names[r.requested_by]))}</div><div class="req-info"><strong>${escapeHtml(names[r.requested_by]||"Friend")}</strong><span class="small muted">Wants to connect</span></div><div class="actions"><button class="primary" data-accept="${r.id}">Accept</button><button class="danger" data-reject="${r.id}">Decline</button></div></div>`),...outgoing.map(r=>`<div class="request"><div class="avatar">${escapeHtml(initials(names[r.requested_by===r.user_a?r.user_b:r.user_a]))}</div><div class="req-info"><strong>${escapeHtml(names[r.requested_by===r.user_a?r.user_b:r.user_a]||"Friend")}</strong><span class="small muted">Request sent</span></div><span class="small muted">Pending</span></div>`)].join("")||'<p class="muted">No incoming requests.</p>';
+    $("requestsList").querySelectorAll("[data-accept]").forEach(b=>b.onclick=()=>resolveRequest(b.dataset.accept,"accepted"));
+    $("requestsList").querySelectorAll("[data-reject]").forEach(b=>b.onclick=()=>resolveRequest(b.dataset.reject,"declined"));
+  }
+  async function resolveRequest(id,status){
+    const {error}=await db.from("friendships").update({status}).eq("id",id);
+    if(error){toast(error.message);return;}toast(status==="accepted"?"Friend added!":"Request declined.");await loadFriends();await updateRequestCount();showRequests();
+  }
+  function subscribeToUpdates(){
+    inboxChannel=db.channel("friendchat-inbox-"+currentUser.id).on("postgres_changes",{event:"*",schema:"public",table:"friendships"},async()=>{await loadFriends();await updateRequestCount();}).subscribe();
+  }
+  async function init(){
+    if(!db){$("authMessage").textContent="Setup needed: create a Supabase project and add its URL and public key to index.html. The README explains each step.";return;}
+    const {data:{session}}=await db.auth.getSession();
+    if(session)await startApp(session.user);
+    db.auth.onAuthStateChange(async(event,session)=>{
+      if(session)await startApp(session.user);
+      else{currentUser=null;myProfile=null;friends=[];selectedFriend=null;$("appView").classList.add("hidden");$("appView").classList.remove("chat-open");$("authView").classList.remove("hidden");}
+    });
+  }
+  setAuthMode(false);init();
+})();
+</script>
+</body>
+</html>
