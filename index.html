@@ -32,7 +32,44 @@
     .request{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--line)}.request:last-child{border-bottom:0}.request .req-info{flex:1;min-width:0}.request strong{display:block;font-size:14px}.request .actions{display:flex;gap:5px}.request .actions button{padding:8px;font-size:12px}
     .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#182230;color:white;border-radius:12px;padding:12px 16px;box-shadow:0 8px 25px #0002;z-index:20;font-size:13px;max-width:90vw}
     @media(max-width:700px){.app{height:100dvh;min-height:0;grid-template-columns:1fr}.sidebar{display:flex}.chat{display:none}.app.chat-open{grid-template-columns:1fr}.app.chat-open .sidebar{display:none}.app.chat-open .chat{display:flex}.side-head{padding-top:16px}.chat-head{height:72px;padding:12px 15px}.messages{padding:18px 14px}.composer{padding:12px}.msg-row{max-width:86%}.back{display:inline-block!important}.side-actions{grid-template-columns:1fr 1fr}.notice{margin-bottom:8px}}
+
     .back{display:none;background:#edf3f8;padding:8px 11px}
+    /* FriendChat refresh */
+    body{background:#eef3f9}
+    .app{max-width:1500px;border-radius:18px;overflow:hidden;margin:12px auto;height:calc(100vh - 24px);min-height:560px;box-shadow:0 18px 60px #19395c12}
+    .sidebar{background:#fbfdff}
+    .side-head{padding-top:20px}
+    .brand-mark{box-shadow:0 6px 18px #087df133}
+    .side-actions button,.server-tools button{border-radius:12px}
+    .contact{margin:2px 0;transition:background .15s}
+    .contact.active{box-shadow:inset 3px 0 var(--blue)}
+    .chat-head{background:#ffffffed;backdrop-filter:blur(12px)}
+    .messages{background:radial-gradient(ellipse at top,#f7fbff,white 60%)}
+    .bubble-msg{box-shadow:0 2px 5px #20304008}
+    .nav-extra{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:0 14px 12px}
+    .nav-extra button{padding:9px 6px;font-size:12px;background:#eef4fb;color:#29425e}
+    .nav-extra button.active{background:#dcecff;color:#075bb0}
+    .profile-edit{display:flex;flex-direction:column;gap:10px}
+    .profile-edit textarea{font:inherit;resize:vertical;min-height:80px;border:1px solid #dce5ee;border-radius:12px;padding:12px}
+    .feed-wrap{flex:1;overflow:auto;padding:24px clamp(14px,4vw,48px);background:#f7faff}
+    .feed-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .feed-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 auto 14px;max-width:720px;box-shadow:0 5px 20px #18324d08}
+    .feed-card video,.feed-card img{display:block;width:100%;max-height:460px;object-fit:contain;background:#101827;border-radius:13px;margin-top:12px}
+    .feed-caption{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px}
+    .upload-label{display:inline-flex;align-items:center;gap:6px;background:#edf3f8;border-radius:12px;padding:10px 13px;font-weight:650;cursor:pointer}
+    .profile-avatar-img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0}
+    .msg-media{display:block;max-width:min(320px,65vw);max-height:300px;border-radius:12px;margin-top:4px}
+    .group-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;cursor:pointer}
+    .group-row:hover{background:#f0f6fd}
+    .video-call-box{position:fixed;inset:0;background:#101827ee;z-index:30;display:flex;align-items:center;justify-content:center;padding:18px}
+    .video-call-inner{width:min(900px,100%);background:#182230;border-radius:20px;padding:14px;color:white}
+    .video-stage{position:relative;min-height:240px;background:#080d14;border-radius:14px;overflow:hidden;display:grid;place-items:center}
+    .video-stage video{width:100%;max-height:65vh;object-fit:contain}
+    #localCallVideo{position:absolute;right:12px;bottom:12px;width:clamp(100px,20%,190px);border:2px solid white;border-radius:12px;transform:scaleX(-1)}
+    .video-controls{display:flex;justify-content:center;gap:8px;padding-top:12px;flex-wrap:wrap}
+    .video-controls button{background:#354355;color:white}.video-controls .danger{background:#d64545;color:white}
+    @media(max-width:700px){.app{margin:0;border-radius:0;height:100dvh}.nav-extra{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nav-extra button{font-size:11px;padding:9px 2px}}
+
     .server-tools{padding:8px 14px;display:flex;gap:7px}.server-tools button{flex:1;padding:9px 6px;font-size:12px}.server-list{padding:0 8px 8px;max-height:110px;overflow:auto}.server-item,.channel-item{padding:9px 10px;border-radius:10px;cursor:pointer;font-size:13px}.server-item:hover,.channel-item:hover,.server-item.active,.channel-item.active{background:var(--blue2);color:#075bb0}.channel-list{padding:0 8px 10px;max-height:120px;overflow:auto}.chat-head .call-btn{background:#e7f8ef;color:#087c49;padding:9px 12px}.chat-head .call-btn:disabled{opacity:.4}.server-invite{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
   </style>
 </head>
@@ -66,6 +103,12 @@
         <button id="addFriendBtn" class="primary">＋ Add friend</button>
         <button id="requestsBtn" class="secondary">Requests <span id="requestCount"></span></button>
       </div>
+      <div class="nav-extra">
+        <button id="feedBtn" type="button">▣ Videos</button>
+        <button id="groupsBtn" type="button">👥 Groups</button>
+        <button id="editProfileBtn" type="button">✎ Profile</button>
+        <button id="homeBtn" type="button">✉ Chats</button>
+      </div>
       <div id="setupNotice" class="notice hidden">Finish the Supabase setup instructions in README.md to enable chat.</div>
       <div class="section-label">Servers</div>
       <div class="server-tools"><button id="createServerBtn" class="primary">＋ Create</button><button id="joinServerBtn" class="secondary">Join</button></div>
@@ -77,18 +120,34 @@
       <header class="chat-head">
         <button id="backBtn" class="back">←</button>
         <div id="chatAvatar" class="avatar">✦</div>
-        <div class="person"><strong id="chatName">Welcome to FriendChat</strong><div id="chatStatus" class="status muted">Choose a friend to start chatting</div></div><button id="voiceCallBtn" class="call-btn" disabled title="Start a private voice call">☎ Call</button>
+        <div class="person"><strong id="chatName">Welcome to FriendChat</strong><div id="chatStatus" class="status muted">Choose a friend to start chatting</div></div><button id="voiceCallBtn" class="call-btn" disabled title="Start a private video call">▣ Video</button>
       </header>
       <section id="messages" class="messages">
         <div class="empty"><div class="bubble">✦</div><h2>Your people, one place.</h2><p>Add a friend to start a private conversation. Messages will appear here in real time.</p></div>
       </section>
       <form id="composer" class="composer">
+        <label id="photoPickLabel" class="upload-label" title="Send a photo">＋<input id="photoInput" type="file" accept="image/*" hidden disabled></label>
         <input id="messageInput" placeholder="Write a message..." maxlength="4000" autocomplete="off" disabled>
         <button id="sendBtn" class="primary send" type="submit" disabled aria-label="Send message">➤</button>
       </form>
     </main>
   </div>
 
+  <section id="feedView" class="feed-wrap hidden">
+    <div class="feed-top"><button id="feedHomeBtn" class="secondary">← Chats</button><div><h2 style="margin:0 0 4px">FriendChat Videos</h2><div class="muted small">Posts from people in your community</div></div><button id="createPostBtn" class="primary">＋ Create post</button></div>
+    <div id="feedPosts"></div>
+  </section>
+  <section id="groupsView" class="feed-wrap hidden">
+    <div class="feed-top"><button id="groupsHomeBtn" class="secondary">← Chats</button><div><h2 style="margin:0 0 4px">Private group chats</h2><div class="muted small">Create a group and invite friends by username</div></div><button id="createGroupBtn" class="primary">＋ New group</button></div>
+    <div id="groupsList" class="feed-card">Loading groups…</div>
+  </section>
+  <div id="videoCallOverlay" class="video-call-box hidden">
+    <div class="video-call-inner">
+      <div class="row spread" style="margin-bottom:10px"><strong id="videoCallTitle">FriendChat video call</strong><span id="videoCallStatus" class="small">Connecting…</span></div>
+      <div class="video-stage"><video id="remoteCallVideo" autoplay playsinline></video><video id="localCallVideo" autoplay muted playsinline></video></div>
+      <div class="video-controls"><button id="toggleMicBtn">🎙 Mute</button><button id="toggleCameraBtn">📷 Camera off</button><button id="endVideoCallBtn" class="danger">End call</button></div>
+    </div>
+  </div>
   <div id="modalBackdrop" class="modal-backdrop hidden">
     <div class="modal">
       <button id="closeModal" class="close" type="button">✕</button>
@@ -109,6 +168,7 @@
   let isSignup = false, currentUser = null, myProfile = null, friends = [], selectedFriend = null;
   let messagesChannel = null, inboxChannel = null, friendsChannel = null, refreshTimer = null;
   let servers=[], activeServer=null, activeChannel=null, serverMessagesChannel=null;
+  let activeGroup=null, groupChannel=null, callFriendId=null, micMuted=false, cameraOff=false;
   let peerConnection=null, localStream=null, callChannel=null, pendingOffer=null;
   const initials = name => (name || "?").trim().split(/\s+/).slice(0,2).map(s => s[0] || "").join("").toUpperCase();
   const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -156,15 +216,28 @@
   $("joinServerBtn").onclick=()=>showModal(`<h2>Join a server</h2><p>Enter a server invite code from its owner.</p><form id="joinServerForm"><input id="serverInviteInput" placeholder="Invite code" maxlength="12" required><button class="primary">Join</button></form><div id="serverFormMsg" class="error" style="margin-top:10px"></div>`);
   $("createChannelBtn").onclick=()=>{if(!activeServer)return;showModal(`<h2>Create a channel</h2><form id="createChannelForm"><input id="newChannelName" placeholder="channel-name" maxlength="32" required><button class="primary">Create</button></form><div id="serverFormMsg" class="error" style="margin-top:10px"></div>`)};
   $("voiceCallBtn").onclick=startVoiceCall;
+  $("feedBtn").onclick=showFeed;
+  $("groupsBtn").onclick=showGroups;
+  $("editProfileBtn").onclick=editProfile;
+  $("homeBtn").onclick=()=>showMainChat();
+  $("feedHomeBtn").onclick=()=>showMainChat();
+  $("groupsHomeBtn").onclick=()=>showMainChat();
+  $("createPostBtn").onclick=createPost;
+  $("createGroupBtn").onclick=createGroup;
+  $("photoInput").addEventListener("change",sendPhoto);
+  $("endVideoCallBtn").onclick=()=>endVoiceCall(true);
+  $("toggleMicBtn").onclick=toggleMic;
+  $("toggleCameraBtn").onclick=toggleCamera;
 
   async function startApp(user){
     currentUser=user; $("authView").classList.add("hidden"); $("appView").classList.remove("hidden");
     if(!db){$("setupNotice").classList.remove("hidden");return;}
     try{
-      const {data,error}=await db.from("profiles").select("id,username").eq("id",user.id).single();
+      const {data,error}=await db.from("profiles").select("id,username,avatar_url,bio").eq("id",user.id).single();
       if(error) throw error; myProfile=data;
       $("myName").textContent=data.username; $("myEmail").textContent=user.email || "";
       $("myAvatar").textContent=initials(data.username);
+      if(data.avatar_url){$("myAvatar").innerHTML=`<img class="profile-avatar-img" src="${escapeHtml(data.avatar_url)}" alt="">`;}
       await loadFriends(); await updateRequestCount(); await loadServers(); subscribeToUpdates();
     }catch(err){toast("Setup issue: "+(err.message||"check README.md")); console.error(err);}
   }
@@ -190,7 +263,7 @@
     $("messageInput").disabled=true;$("sendBtn").disabled=true;renderContacts();
   }
   async function openChat(friend){
-    if(!friend)return; activeServer=null;activeChannel=null;$("channelArea").classList.add("hidden");selectedFriend=friend; renderContacts(); $("appView").classList.add("chat-open");$("voiceCallBtn").disabled=false;$("voiceCallBtn").textContent="☎ Call";$("voiceCallBtn").onclick=startVoiceCall;$("messageInput").placeholder="Write a message…";
+    if(!friend)return; activeGroup=null; if(groupChannel&&db)db.removeChannel(groupChannel);groupChannel=null; activeServer=null;activeChannel=null;$("channelArea").classList.add("hidden");selectedFriend=friend; $("photoInput").disabled=false; renderContacts(); $("appView").classList.add("chat-open");$("voiceCallBtn").disabled=false;$("voiceCallBtn").textContent="▣ Video";$("voiceCallBtn").onclick=startVoiceCall;$("messageInput").placeholder="Write a message…";
     $("chatAvatar").textContent=initials(friend.username);$("chatName").textContent=friend.username;$("chatStatus").textContent="FriendChat conversation";$("chatStatus").className="status muted";
     $("messageInput").disabled=false;$("sendBtn").disabled=false;$("messageInput").focus();
     await loadMessages();
@@ -218,12 +291,14 @@
     if($("messages").querySelector(`[data-message-id="${CSS.escape(m.id)}"]`))return;
     const mine=m.sender_id===currentUser.id, time=new Date(m.created_at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
     const row=document.createElement("div");row.className="msg-row"+(mine?" mine":"");row.dataset.messageId=m.id;
-    row.innerHTML=`<div class="bubble-msg">${escapeHtml(m.body)}</div><div class="msg-time">${mine?"You":escapeHtml(selectedFriend?.username||"Friend")} · ${time}</div>`;
+    const content=String(m.body||"").startsWith("FC_PHOTO:")?`<img class="msg-media" src="${escapeHtml(String(m.body).slice(9))}" alt="Photo sent in chat" loading="lazy">`:`${escapeHtml(m.body)}`;
+    row.innerHTML=`<div class="bubble-msg">${content}</div><div class="msg-time">${mine?"You":escapeHtml(selectedFriend?.username||"Friend")} · ${time}</div>`;
     $("messages").appendChild(row);scrollMessages();
   }
   function scrollMessages(){$("messages").scrollTop=$("messages").scrollHeight;}
   async function sendMessage(e){
     e.preventDefault(); const body=$("messageInput").value.trim(); if(!body||!db)return;
+    if(activeGroup){try{const {error}=await db.from("group_messages").insert({group_id:activeGroup.id,sender_id:currentUser.id,body});if(error)throw error;$("messageInput").value="";}catch(err){toast("Message not sent: "+err.message);}return;}
     if(activeChannel){try{const {error}=await db.from("server_messages").insert({channel_id:activeChannel.id,server_id:activeServer.id,sender_id:currentUser.id,body});if(error)throw error;$("messageInput").value="";}catch(err){toast("Message not sent: "+err.message);}return;}
     if(!selectedFriend)return;
     $("sendBtn").disabled=true;
@@ -240,6 +315,30 @@
   }
   $("modalContent").addEventListener;
   document.addEventListener("submit",async e=>{
+    if(e.target.id==="profileForm"){
+      e.preventDefault();const msg=$("profileMsg");msg.textContent="Saving…";
+      try{
+        const username=$("profileUsername").value.trim();if(username.length<3||!/^[a-zA-Z0-9_]+$/.test(username))throw new Error("Username must be 3–24 letters, numbers, or underscores.");
+        let avatar_url=myProfile?.avatar_url||null;const file=$("profileAvatarFile").files?.[0];if(file)avatar_url=await uploadMedia(file,"avatars");
+        const {data,error}=await db.from("profiles").update({username,bio:$("profileBio").value.trim(),avatar_url}).eq("id",currentUser.id).select("id,username,bio,avatar_url").single();if(error)throw error;
+        myProfile=data;$("myName").textContent=data.username;$("myAvatar").innerHTML=data.avatar_url?`<img class="profile-avatar-img" src="${escapeHtml(data.avatar_url)}" alt="">`:escapeHtml(initials(data.username));closeModal();toast("Profile updated!");
+      }catch(err){msg.textContent=err.message||"Could not save profile.";}return;
+    }
+    if(e.target.id==="postForm"){
+      e.preventDefault();const msg=$("postMsg");msg.textContent="Uploading…";
+      try{const file=$("postFile").files?.[0];const url=await uploadMedia(file,"posts");const type=file.type.startsWith("video/")?"video":"image";const {error}=await db.from("media_posts").insert({user_id:currentUser.id,caption:$("postCaption").value.trim(),media_url:url,media_type:type});if(error)throw error;closeModal();await showFeed();toast("Post published!");}
+      catch(err){msg.textContent=err.message||"Could not publish post.";}return;
+    }
+    if(e.target.id==="groupForm"){
+      e.preventDefault();const msg=$("groupMsg");msg.textContent="Creating…";
+      try{
+        const {data:g,error}=await db.from("group_chats").insert({name:$("groupName").value.trim(),created_by:currentUser.id}).select("id,name,created_at").single();if(error)throw error;
+        const ids=[currentUser.id];const names=$("groupMembers").value.split(",").map(x=>x.trim()).filter(Boolean);
+        for(const name of names){const {data:p,error:pe}=await db.from("profiles").select("id,username").ilike("username",name).maybeSingle();if(pe)throw pe;if(!p)throw new Error("No user found for username: "+name);if(!friends.some(f=>f.id===p.id))throw new Error(name+" is not your friend. Add them as a friend first.");ids.push(p.id);}
+        const unique=[...new Set(ids)];const {error:me}=await db.from("group_members").insert(unique.map(user_id=>({group_id:g.id,user_id})));if(me)throw me;
+        closeModal();await loadGroups();toast("Private group created!");
+      }catch(err){msg.textContent=err.message||"Could not create group.";}return;
+    }
     if(["createServerForm","joinServerForm","createChannelForm"].includes(e.target.id)){
       e.preventDefault(); const form=e.target; const out=$("serverFormMsg"); if(out){out.className="error";out.textContent="Working…";}
       try{
@@ -302,17 +401,98 @@
     const {data,error:svErr}=await db.from("servers").select("id,name,invite_code,owner_id").in("id",ids);if(svErr){toast("Could not load servers: "+svErr.message);return;}servers=data||[];renderServers();
   }
   function renderServers(){const host=$("serverList");host.innerHTML=servers.map(s=>`<div class="server-item ${activeServer?.id===s.id?'active':''}" data-server="${escapeHtml(s.id)}">▣ ${escapeHtml(s.name)}</div>`).join("")||'<div class="muted small" style="padding:6px 10px">No servers yet. Create one or join with an invite code.</div>';host.querySelectorAll("[data-server]").forEach(el=>el.onclick=()=>selectServer(servers.find(s=>s.id===el.dataset.server)));}
-  async function selectServer(server){activeServer=server;activeChannel=null;selectedFriend=null;renderServers();$("channelArea").classList.remove("hidden");$("chatName").textContent=server.name;$("chatStatus").textContent="Server · choose a text channel";$("chatAvatar").textContent="▣";$("voiceCallBtn").disabled=true;$("messageInput").placeholder="Select a channel…";$("messageInput").disabled=true;$("sendBtn").disabled=true;$("messages").innerHTML=`<div class="empty"><div class="bubble">▣</div><h2>${escapeHtml(server.name)}</h2><p>Server invite code: <b>${escapeHtml(server.invite_code)}</b><br>Share this code with friends so they can join.</p></div>`;await loadChannels();}
+  async function selectServer(server){activeServer=server;activeChannel=null;selectedFriend=null;renderServers();$("channelArea").classList.remove("hidden");$("chatName").textContent=server.name;$("chatStatus").textContent="Server · choose a text channel";$("chatAvatar").textContent="▣";$("voiceCallBtn").disabled=true;$("photoInput").disabled=true;$("messageInput").placeholder="Select a channel…";$("messageInput").disabled=true;$("sendBtn").disabled=true;$("messages").innerHTML=`<div class="empty"><div class="bubble">▣</div><h2>${escapeHtml(server.name)}</h2><p>Server invite code: <b>${escapeHtml(server.invite_code)}</b><br>Share this code with friends so they can join.</p></div>`;await loadChannels();}
   async function loadChannels(){if(!activeServer)return;const {data,error}=await db.from("server_channels").select("id,server_id,name").eq("server_id",activeServer.id).order("name");if(error){toast("Could not load channels: "+error.message);return;}const host=$("channelList");host.innerHTML=(data||[]).map(c=>`<div class="channel-item ${activeChannel?.id===c.id?'active':''}" data-channel="${escapeHtml(c.id)}"># ${escapeHtml(c.name)}</div>`).join("")||'<div class="muted small" style="padding:6px">No channels yet.</div>';host.querySelectorAll("[data-channel]").forEach(el=>el.onclick=()=>openServerChannel((data||[]).find(c=>c.id===el.dataset.channel)));}
   async function openServerChannel(channel){activeChannel=channel;selectedFriend=null;await loadChannels();$("chatName").textContent=activeServer.name+" / #"+channel.name;$("chatStatus").textContent="Server text channel";$("chatAvatar").textContent="#";$("voiceCallBtn").disabled=true;$("messageInput").placeholder="Message #"+channel.name;$("messageInput").disabled=false;$("sendBtn").disabled=false;$("messages").innerHTML="";if(serverMessagesChannel)db.removeChannel(serverMessagesChannel);const {data,error}=await db.from("server_messages").select("id,sender_id,body,created_at").eq("channel_id",channel.id).order("created_at").limit(300);if(error){toast("Could not load channel: "+error.message);return;}if(!data?.length){$("messages").innerHTML='<div class="empty"><div class="bubble">#</div><h2>Start the conversation</h2><p>Send the first message in this channel.</p></div>';}else data.forEach(appendServerMessage);serverMessagesChannel=db.channel("server-channel-"+channel.id).on("postgres_changes",{event:"INSERT",schema:"public",table:"server_messages",filter:"channel_id=eq."+channel.id},p=>{if(activeChannel?.id===channel.id)appendServerMessage(p.new);}).subscribe();}
   async function appendServerMessage(m){if($("messages").querySelector(".empty"))$("messages").innerHTML="";if($("messages").querySelector(`[data-message-id="${CSS.escape(m.id)}"]`))return;let username="Member";if(m.sender_id===currentUser.id)username=myProfile?.username||"You";else{const {data}=await db.from("profiles").select("username").eq("id",m.sender_id).maybeSingle();if(data?.username)username=data.username;}const row=document.createElement("div");row.className="msg-row"+(m.sender_id===currentUser.id?" mine":"");row.dataset.messageId=m.id;row.innerHTML=`<div class="bubble-msg"><strong>${escapeHtml(username)}</strong><br>${escapeHtml(m.body)}</div><div class="msg-time">${new Date(m.created_at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div>`;$("messages").appendChild(row);scrollMessages();}
   // Browser-to-browser, one-to-one voice calls. Both people must be online and allow microphone access.
   async function setupCallChannel(friendId){if(callChannel)await db.removeChannel(callChannel);const pair=[currentUser.id,friendId].sort().join("-");callChannel=db.channel("friendchat-call-"+pair,{config:{broadcast:{self:false}}});callChannel.on("broadcast",{event:"signal"},async({payload})=>{if(payload.to!==currentUser.id)return;try{if(payload.type==="offer"){pendingOffer=payload.offer;const accept=confirm("Incoming FriendChat voice call. Accept?");if(!accept){await callChannel.send({type:"broadcast",event:"signal",payload:{type:"reject",to:payload.from}});return;}await answerVoiceCall(payload.from,payload.offer);}else if(payload.type==="answer"&&peerConnection){await peerConnection.setRemoteDescription(payload.answer);}else if(payload.type==="ice"&&peerConnection&&payload.candidate){await peerConnection.addIceCandidate(payload.candidate);}else if(payload.type==="hangup"){endVoiceCall(false);toast("Call ended by your friend.");}else if(payload.type==="reject"){endVoiceCall(false);toast("Your friend declined the call.");}}catch(err){console.error(err);toast("Call connection issue: "+err.message);}});await callChannel.subscribe();return callChannel;}
-  async function makePeer(friendId){peerConnection=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});peerConnection.onicecandidate=e=>{if(e.candidate&&callChannel)callChannel.send({type:"broadcast",event:"signal",payload:{type:"ice",to:friendId,from:currentUser.id,candidate:e.candidate}});};peerConnection.ontrack=e=>{let audio=$("remoteCallAudio");if(!audio){audio=document.createElement("audio");audio.id="remoteCallAudio";audio.autoplay=true;document.body.appendChild(audio);}audio.srcObject=e.streams[0];};peerConnection.onconnectionstatechange=()=>{if(["failed","disconnected","closed"].includes(peerConnection?.connectionState))toast("Voice connection: "+peerConnection.connectionState);};localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});localStream.getTracks().forEach(t=>peerConnection.addTrack(t,localStream));}
-  async function startVoiceCall(){if(!selectedFriend||!db)return;if(!navigator.mediaDevices?.getUserMedia){toast("Voice calls need a secure HTTPS site and microphone permission.");return;}try{await setupCallChannel(selectedFriend.id);await makePeer(selectedFriend.id);const offer=await peerConnection.createOffer();await peerConnection.setLocalDescription(offer);await callChannel.send({type:"broadcast",event:"signal",payload:{type:"offer",to:selectedFriend.id,from:currentUser.id,offer}});$("voiceCallBtn").textContent="⏹ End call";$("voiceCallBtn").onclick=()=>endVoiceCall(true);toast("Calling "+selectedFriend.username+"… Keep FriendChat open.");}catch(err){endVoiceCall(false);toast("Could not start call: "+err.message);}}
-  async function answerVoiceCall(friendId,offer){await makePeer(friendId);await peerConnection.setRemoteDescription(offer);const answer=await peerConnection.createAnswer();await peerConnection.setLocalDescription(answer);await callChannel.send({type:"broadcast",event:"signal",payload:{type:"answer",to:friendId,from:currentUser.id,answer}});$("voiceCallBtn").textContent="⏹ End call";$("voiceCallBtn").disabled=false;$("voiceCallBtn").onclick=()=>endVoiceCall(true);toast("Voice call connected. Keep FriendChat open.");}
-  async function endVoiceCall(notify=true){if(notify&&callChannel&&selectedFriend)await callChannel.send({type:"broadcast",event:"signal",payload:{type:"hangup",to:selectedFriend.id,from:currentUser.id}});if(localStream)localStream.getTracks().forEach(t=>t.stop());localStream=null;if(peerConnection)peerConnection.close();peerConnection=null;const audio=$("remoteCallAudio");if(audio){audio.srcObject=null;audio.remove();}if(callChannel){await db.removeChannel(callChannel);callChannel=null;}$("voiceCallBtn").textContent="☎ Call";$("voiceCallBtn").onclick=startVoiceCall;}
+  async function makePeer(friendId){peerConnection=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});peerConnection.onicecandidate=e=>{if(e.candidate&&callChannel)callChannel.send({type:"broadcast",event:"signal",payload:{type:"ice",to:friendId,from:currentUser.id,candidate:e.candidate}});};peerConnection.ontrack=e=>{$("remoteCallVideo").srcObject=e.streams[0];$("videoCallStatus").textContent="Connected";};peerConnection.onconnectionstatechange=()=>{if(["failed","disconnected","closed"].includes(peerConnection?.connectionState))toast("Voice connection: "+peerConnection.connectionState);};localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:true});$("localCallVideo").srcObject=localStream;$("videoCallOverlay").classList.remove("hidden");$("videoCallStatus").textContent="Waiting for friend…";localStream.getTracks().forEach(t=>peerConnection.addTrack(t,localStream));}
+  async function startVoiceCall(){if(!selectedFriend||!db)return;callFriendId=selectedFriend.id; $("videoCallTitle").textContent="Calling "+selectedFriend.username;if(!navigator.mediaDevices?.getUserMedia){toast("Voice calls need a secure HTTPS site and microphone permission.");return;}try{await setupCallChannel(selectedFriend.id);await makePeer(selectedFriend.id);const offer=await peerConnection.createOffer();await peerConnection.setLocalDescription(offer);await callChannel.send({type:"broadcast",event:"signal",payload:{type:"offer",to:selectedFriend.id,from:currentUser.id,offer}});$("voiceCallBtn").textContent="⏹ End call";$("voiceCallBtn").onclick=()=>endVoiceCall(true);$("videoCallTitle").textContent="Calling "+selectedFriend.username;toast("Calling "+selectedFriend.username+"… Keep FriendChat open.");}catch(err){endVoiceCall(false);toast("Could not start call: "+err.message);}}
+  async function answerVoiceCall(friendId,offer){await makePeer(friendId);await peerConnection.setRemoteDescription(offer);const answer=await peerConnection.createAnswer();await peerConnection.setLocalDescription(answer);await callChannel.send({type:"broadcast",event:"signal",payload:{type:"answer",to:friendId,from:currentUser.id,answer}});$("voiceCallBtn").textContent="⏹ End call";$("voiceCallBtn").disabled=false;$("voiceCallBtn").onclick=()=>endVoiceCall(true);$("videoCallTitle").textContent="Video call with "+(selectedFriend?.username||"friend");$("videoCallStatus").textContent="Connected";toast("Video call connected. Keep FriendChat open.");}
+  async function endVoiceCall(notify=true){if(notify&&callChannel&&selectedFriend)await callChannel.send({type:"broadcast",event:"signal",payload:{type:"hangup",to:selectedFriend.id,from:currentUser.id}});if(localStream)localStream.getTracks().forEach(t=>t.stop());localStream=null;if(peerConnection)peerConnection.close();peerConnection=null;const audio=$("remoteCallAudio");if(audio){audio.srcObject=null;audio.remove();}if(callChannel){await db.removeChannel(callChannel);callChannel=null;}$("voiceCallBtn").textContent="▣ Video";$("voiceCallBtn").onclick=startVoiceCall;}
 
+
+  function showMainChat(){
+    $("feedView").classList.add("hidden");$("groupsView").classList.add("hidden");
+    $("appView").classList.remove("hidden");$("appView").classList.remove("chat-open");
+    document.querySelectorAll(".nav-extra button").forEach(b=>b.classList.remove("active"));
+  }
+  async function showFeed(){
+    $("appView").classList.add("hidden");$("groupsView").classList.add("hidden");$("feedView").classList.remove("hidden");
+    document.querySelectorAll(".nav-extra button").forEach(b=>b.classList.remove("active"));$("feedBtn").classList.add("active");
+    const host=$("feedPosts");host.innerHTML='<div class="feed-card">Loading videos…</div>';
+    const {data,error}=await db.from("media_posts").select("id,user_id,caption,media_url,media_type,created_at").order("created_at",{ascending:false}).limit(50);
+    if(error){host.innerHTML=`<div class="feed-card">Feed setup needed: ${escapeHtml(error.message)}<br><span class="muted small">Run the FriendChat features SQL file in Supabase first.</span></div>`;return;}
+    const rows=data||[]; if(!rows.length){host.innerHTML='<div class="feed-card">No posts yet. Be the first to share a video or photo!</div>';return;}
+    const ids=[...new Set(rows.map(r=>r.user_id))];let names={};
+    if(ids.length){const {data:ps}=await db.from("profiles").select("id,username").in("id",ids);(ps||[]).forEach(p=>names[p.id]=p.username);}
+    host.innerHTML=rows.map(r=>`<article class="feed-card"><div class="row"><div class="avatar">${escapeHtml(initials(names[r.user_id]||"Friend"))}</div><div><strong>${escapeHtml(names[r.user_id]||"Friend")}</strong><div class="tiny muted">${new Date(r.created_at).toLocaleString()}</div></div></div>${r.media_type==="video"?`<video controls playsinline preload="metadata" src="${escapeHtml(r.media_url)}"></video>`:`<img loading="lazy" src="${escapeHtml(r.media_url)}" alt="Post from ${escapeHtml(names[r.user_id]||"friend")}">`}<div class="feed-caption">${escapeHtml(r.caption||"")}</div></article>`).join("");
+  }
+  function createPost(){
+    showModal(`<h2>Create a post</h2><p>Upload a photo or video. Keep posts respectful and avoid sharing anyone's private information.</p><form id="postForm" class="profile-edit"><input id="postCaption" maxlength="500" placeholder="Write a caption…"><label class="upload-label">Choose photo or video <input id="postFile" type="file" accept="image/*,video/*" required></label><button class="primary">Publish post</button></form><div id="postMsg" class="error"></div>`);
+  }
+  async function uploadMedia(file,folder){
+    if(!file)throw new Error("Choose a file first.");
+    if(!file.type.startsWith("image/")&&!file.type.startsWith("video/"))throw new Error("Choose an image or video file.");
+    const max=file.type.startsWith("video/")?100*1024*1024:12*1024*1024;
+    if(file.size>max)throw new Error(file.type.startsWith("video/")?"Video must be under 100 MB.":"Image must be under 12 MB.");
+    const ext=(file.name.split(".").pop()||"bin").replace(/[^a-z0-9]/gi,"").toLowerCase()||"bin";
+    const path=`${currentUser.id}/${folder}/${crypto.randomUUID()}.${ext}`;
+    const {error}=await db.storage.from("friendchat-media").upload(path,file,{upsert:false,contentType:file.type});
+    if(error)throw error;
+    const {data}=db.storage.from("friendchat-media").getPublicUrl(path);
+    return data.publicUrl;
+  }
+  async function sendPhoto(e){
+    const file=e.target.files?.[0];e.target.value="";if(!file||!selectedFriend||!db)return;
+    try{toast("Uploading photo…");const url=await uploadMedia(file,"chat");const {error}=await db.from("messages").insert({sender_id:currentUser.id,receiver_id:selectedFriend.id,conversation_key:conversationKey(currentUser.id,selectedFriend.id),body:"FC_PHOTO:"+url});if(error)throw error;toast("Photo sent!");}
+    catch(err){toast("Photo failed: "+err.message);}
+  }
+  async function editProfile(){
+    const p=myProfile||{};
+    showModal(`<h2>Customize your profile</h2><form id="profileForm" class="profile-edit"><label>Username<input id="profileUsername" maxlength="24" minlength="3" value="${escapeHtml(p.username||"")}" required></label><label>Bio<textarea id="profileBio" maxlength="180" placeholder="A little about you…">${escapeHtml(p.bio||"")}</textarea></label><label class="upload-label">Choose profile picture <input id="profileAvatarFile" type="file" accept="image/*"></label><button class="primary">Save profile</button></form><div id="profileMsg" class="error"></div>`);
+  }
+  async function createGroup(){
+    showModal(`<h2>Create a private group</h2><p>Enter a group name and your friends' exact usernames separated by commas.</p><form id="groupForm" class="profile-edit"><input id="groupName" maxlength="50" placeholder="Group name" required><input id="groupMembers" placeholder="alex, sam (optional)"><button class="primary">Create group</button></form><div id="groupMsg" class="error"></div>`);
+  }
+  async function showGroups(){
+    $("appView").classList.add("hidden");$("feedView").classList.add("hidden");$("groupsView").classList.remove("hidden");
+    document.querySelectorAll(".nav-extra button").forEach(b=>b.classList.remove("active"));$("groupsBtn").classList.add("active");
+    await loadGroups();
+  }
+  async function loadGroups(){
+    const host=$("groupsList");host.innerHTML="Loading groups…";
+    const {data:members,error}=await db.from("group_members").select("group_id").eq("user_id",currentUser.id);
+    if(error){host.textContent="Group chat setup needed: "+error.message;return;}
+    const ids=(members||[]).map(m=>m.group_id);
+    if(!ids.length){host.innerHTML='<p class="muted">No private groups yet. Create one to start chatting.</p>';return;}
+    const {data:groups,error:gErr}=await db.from("group_chats").select("id,name,created_at").in("id",ids).order("created_at",{ascending:false});
+    if(gErr){host.textContent=gErr.message;return;}
+    host.innerHTML=(groups||[]).map(g=>`<div class="group-row" data-group="${escapeHtml(g.id)}"><div class="avatar">👥</div><div><strong>${escapeHtml(g.name)}</strong><div class="small muted">Private group chat</div></div></div>`).join("")||"No groups yet.";
+    host.querySelectorAll("[data-group]").forEach(el=>el.onclick=()=>openGroup((groups||[]).find(g=>g.id===el.dataset.group)));
+  }
+  async function openGroup(group){
+    activeGroup=group;selectedFriend=null;activeServer=null;activeChannel=null;
+    $("feedView").classList.add("hidden");$("groupsView").classList.add("hidden");$("appView").classList.remove("hidden");$("appView").classList.add("chat-open");
+    $("chatName").textContent=group.name;$("chatStatus").textContent="Private group chat";$("chatAvatar").textContent="👥";
+    $("voiceCallBtn").disabled=true;$("messageInput").disabled=false;$("sendBtn").disabled=false;$("messageInput").placeholder="Message the group…";$("photoInput").disabled=true;
+    const {data,error}=await db.from("group_messages").select("id,group_id,sender_id,body,created_at").eq("group_id",group.id).order("created_at").limit(300);
+    if(error){toast("Could not load group: "+error.message);return;}
+    $("messages").innerHTML="";
+    for(const m of data||[])await appendGroupMessage(m);
+    if(!data?.length)$("messages").innerHTML='<div class="empty"><div class="bubble">👥</div><h2>Start the group chat</h2><p>Send a message to your group.</p></div>';
+    if(groupChannel)db.removeChannel(groupChannel);
+    groupChannel=db.channel("group-"+group.id).on("postgres_changes",{event:"INSERT",schema:"public",table:"group_messages",filter:"group_id=eq."+group.id},p=>{if(activeGroup?.id===group.id)appendGroupMessage(p.new);}).subscribe();
+  }
+  async function appendGroupMessage(m){
+    if($("messages").querySelector(".empty"))$("messages").innerHTML="";
+    if($("messages").querySelector(`[data-message-id="${CSS.escape(m.id)}"]`))return;
+    let name="Member";if(m.sender_id===currentUser.id)name=myProfile?.username||"You";else{const {data}=await db.from("profiles").select("username").eq("id",m.sender_id).maybeSingle();if(data?.username)name=data.username;}
+    const row=document.createElement("div");row.className="msg-row"+(m.sender_id===currentUser.id?" mine":"");row.dataset.messageId=m.id;row.innerHTML=`<div class="bubble-msg"><strong>${escapeHtml(name)}</strong><br>${escapeHtml(m.body)}</div><div class="msg-time">${new Date(m.created_at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div>`;$("messages").appendChild(row);scrollMessages();
+  }
+  function toggleMic(){if(!localStream)return;micMuted=!micMuted;localStream.getAudioTracks().forEach(t=>t.enabled=!micMuted);$("toggleMicBtn").textContent=micMuted?"🎙 Unmute":"🎙 Mute";}
+  function toggleCamera(){if(!localStream)return;cameraOff=!cameraOff;localStream.getVideoTracks().forEach(t=>t.enabled=!cameraOff);$("toggleCameraBtn").textContent=cameraOff?"📷 Turn camera on":"📷 Camera off";}
   function subscribeToUpdates(){
     inboxChannel=db.channel("friendchat-inbox-"+currentUser.id).on("postgres_changes",{event:"*",schema:"public",table:"friendships"},async()=>{await loadFriends();await updateRequestCount();}).subscribe();
   }
