@@ -80,6 +80,76 @@
     .comment-form{display:flex;gap:7px}.comment-form input{min-width:0}.comment-form button{padding:8px 10px}
 
     .server-tools{padding:8px 14px;display:flex;gap:7px}.server-tools button{flex:1;padding:9px 6px;font-size:12px}.server-list{padding:0 8px 8px;max-height:110px;overflow:auto}.server-item,.channel-item{padding:9px 10px;border-radius:10px;cursor:pointer;font-size:13px}.server-item:hover,.channel-item:hover,.server-item.active,.channel-item.active{background:var(--blue2);color:#075bb0}.channel-list{padding:0 8px 10px;max-height:120px;overflow:auto}.chat-head .call-btn{background:#e7f8ef;color:#087c49;padding:9px 12px}.chat-head .call-btn:disabled{opacity:.4}.server-invite{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+
+    /* FriendChat responsive redesign + reliable independent scrolling */
+    :root{--blue:#1769e8;--blue2:#eaf2ff;--ink:#152238;--muted:#748198;--line:#e6ebf2;--panel:#fff;--bg:#f3f6fb;--green:#16a36a;--danger:#d64545}
+    html{height:100%;min-height:100%;overscroll-behavior:none}
+    body{margin:0;min-height:100%;height:100%;background:#f3f6fb;color:var(--ink);overflow:hidden}
+    button{border-radius:13px;font-weight:700;transition:background .16s,transform .16s,box-shadow .16s}
+    button:not(:disabled):active{transform:translateY(1px)}
+    input,textarea{font-size:16px}
+    .app{width:100%;height:100vh;height:100dvh;min-height:0;max-width:1600px;margin:0 auto;border-radius:0;overflow:hidden;grid-template-columns:300px minmax(0,1fr);box-shadow:0 14px 60px #1522380c}
+    .sidebar,.chat{min-height:0;height:100%;overflow:hidden}
+    .sidebar{background:#fbfcff;border-right:1px solid #e6ebf2}
+    .side-head{padding:22px 20px 16px}
+    .me{padding:12px 18px 18px}
+    .contact-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable}
+    .server-list,.channel-list{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .chat{display:flex;flex-direction:column;min-width:0}
+    .chat-head{flex:0 0 auto;min-height:76px;height:auto;background:#ffffffeb;gap:10px;padding:13px clamp(12px,2vw,26px)}
+    .chat-head .person{min-width:0;overflow:hidden}
+    .chat-head .person strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .messages{display:flex;flex:1 1 auto;min-height:0;height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-gutter:stable;padding:22px clamp(14px,3vw,44px);gap:11px}
+    .messages .empty{flex-shrink:0}
+    .composer{flex:0 0 auto;min-width:0;padding:12px clamp(10px,2vw,22px) max(12px,env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);gap:9px}
+    .composer input{min-width:0;flex:1;font-size:16px;padding:13px 16px;background:#f4f7fb;border:1px solid transparent}
+    .composer .upload-label{flex:0 0 auto}
+    .send{flex:0 0 46px;width:46px;height:46px}
+    .feed-wrap{height:100vh;height:100dvh;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:clamp(14px,3vw,34px);padding-bottom:max(24px,env(safe-area-inset-bottom))}
+    .feed-top{position:sticky;top:-1px;z-index:2;background:#f7faffed;backdrop-filter:blur(12px);padding:10px 0 14px}
+    .feed-card{border-radius:22px;padding:clamp(12px,2vw,20px);box-shadow:0 8px 28px #1d35570b}
+    .feed-card video,.feed-card img{max-height:min(60vh,560px)}
+    .modal-backdrop{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    .modal{max-height:calc(100dvh - 36px);overflow-y:auto;overscroll-behavior:contain}
+    .video-call-box{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+    @media(min-width:701px){body{padding:12px;height:100%;}.app{height:calc(100dvh - 24px);border:1px solid #e7edf5;border-radius:22px}.sidebar{border-radius:22px 0 0 22px}.chat{border-radius:0 22px 22px 0}.messages{scrollbar-width:thin;scrollbar-color:#d5deea transparent}}
+    @media(max-width:700px){
+      body{padding:0;height:100%;overflow:hidden}
+      .app{display:grid;grid-template-columns:minmax(0,1fr);height:100vh;height:100dvh;min-height:0;margin:0;border-radius:0;border:0}
+      .sidebar{height:100%;min-height:0;border:0}
+      .app:not(.chat-open) .chat{display:none}
+      .app.chat-open .sidebar{display:none}
+      .app.chat-open .chat{display:flex;height:100%;min-height:0;grid-column:1}
+      .chat-head{min-height:66px;padding:9px 10px;gap:8px}
+      .chat-head .avatar{width:36px;height:36px}
+      .chat-head .person{flex:1}
+      .chat-head .status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .chat-head .call-btn{padding:9px 10px;font-size:12px;white-space:nowrap}
+      .messages{padding:14px 12px;gap:9px}
+      .msg-row{max-width:88%;}
+      .composer{padding:9px 9px max(9px,env(safe-area-inset-bottom));gap:7px}
+      .composer input{padding:12px 13px}
+      .composer .upload-label{padding:10px 11px}
+      .send{width:43px;height:43px;flex-basis:43px}
+      .nav-extra{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding-inline:10px}
+      .nav-extra button{min-width:0;font-size:11px;padding:10px 2px}
+      .side-head{padding:14px 15px 10px}
+      .me{padding:10px 14px 12px}
+      .side-actions{padding-inline:10px}
+      .server-tools{padding-inline:10px}
+      .section-label{padding-left:14px}
+      .contact-list{min-height:0}
+      .feed-wrap{padding:12px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+      .feed-top{gap:8px;flex-wrap:wrap}
+      .feed-top h2{font-size:19px}
+      .feed-top button{padding:9px 10px;font-size:12px}
+      .feed-card{margin-bottom:12px}
+      .video-stage{min-height:180px}
+      .video-call-inner{padding:10px}
+      .video-controls button{padding:10px}
+    }
+    @media(max-width:380px){.chat-head .call-btn{padding:8px;font-size:11px}.chat-head{gap:5px}.chat-head .avatar{display:none}.composer .upload-label{padding:9px}.nav-extra button{font-size:10px}}
+
   </style>
 </head>
 <body>
